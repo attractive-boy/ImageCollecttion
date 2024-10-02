@@ -85,7 +85,7 @@ export default function UploadPage() {
               await request(res.result, {
                 method: "PUT",
                 headers: {
-                  "Content-Type":  "Content-Type": fileType || "application/octet-stream", // 添加默认值
+                   "Content-Type": fileType || "application/octet-stream", // 添加默认值
                   "Content-Length": chunk.size.toString(),
                   "Content-Range": contentRange, // 关键: 指定当前块的范围
                 },
