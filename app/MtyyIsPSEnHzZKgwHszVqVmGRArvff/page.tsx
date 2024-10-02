@@ -88,7 +88,7 @@ const columns: ProColumns<any>[] = [
           //获取路由 base 地址
           const baseUrl = window.location.origin;
           // 将文件名称转换成 base64
-          const base64FileName = window.btoa(record.name);
+          const base64FileName = window.btoa(encodeURIComponent(record.name));
           //复制到剪切板
           navigator.clipboard.writeText(
             `${baseUrl}/upload?id=${base64FileName}`

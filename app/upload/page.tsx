@@ -24,7 +24,7 @@ export default function UploadPage() {
     setIdParam(paramValue); // 保存到 state
 
     // 从本地存储恢复已上传的图片信息
-    const localStorageKey = paramValue ? window.atob(paramValue) : "";
+    const localStorageKey = paramValue ? decodeURIComponent(window.atob(paramValue)) : "";
     const savedImages = JSON.parse(localStorage.getItem(localStorageKey) || "[]");
     setUploadedImages(savedImages);
   }, [idParam]);
@@ -55,8 +55,8 @@ export default function UploadPage() {
         const now = new Date();
         const fileName = `${uploadUser}${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}${String(now.getMilliseconds()).padStart(3, '0')}`;
         const fileType = file.name.split(".").pop();
-        const url = `${window.atob(idParam ?? "")}/${fileName}.${fileType}`;
-        const localStorageKey = idParam ? window.atob(idParam) : "";
+        const url = `${decodeURIComponent(window.atob(idParam ?? ""))}/${fileName}.${fileType}`;
+        const localStorageKey = idParam ? decodeURIComponent(window.atob(idParam)) : "";
         
         let state = "成功";
         try{
@@ -82,10 +82,10 @@ export default function UploadPage() {
                 end - 1
               }/${totalSize}`;
 
-              await request(res.result, {
+              await request(res.uploadUrl, {
                 method: "PUT",
                 headers: {
-                   "Content-Type": fileType || "application/octet-stream", // 添加默认值
+                  "Content-Type": fileType || "application/json", // 添加默认值
                   "Content-Length": chunk.size.toString(),
                   "Content-Range": contentRange, // 关键: 指定当前块的范围
                 },
@@ -166,7 +166,7 @@ export default function UploadPage() {
             items: [
               {
                 key: "tab1",
-                label: <span>{idParam && <div>{window.atob(idParam)}</div>}</span>,
+                label: <span>{idParam && <div>{decodeURIComponent(window.atob(idParam))}</div>}</span>,
               },
             ],
             onChange(key) {
@@ -188,7 +188,7 @@ export default function UploadPage() {
               type="primary"
               onClick={() => {
                 setUploadedImages([]);
-                localStorage.removeItem(idParam ? window.atob(idParam) : "");
+                localStorage.removeItem(idParam ? decodeURIComponent(window.atob(idParam)) : "");
               }}
             >
               清空历史
