@@ -4,7 +4,7 @@ import { gettoken } from '@/app/utils/gettoken';
 import { NextRequest, NextResponse } from 'next/server';
 
 // 创建上传会话的函数
-export async function createUploadSession(fileName: string, accessToken: string) {
+async function createUploadSession(fileName: string, accessToken: string) {
   try {
     const response = await fetch(`https://graph.microsoft.com/v1.0/me/drive/root:/${fileName}:/createUploadSession`, {
       method: 'POST',
@@ -27,31 +27,8 @@ export async function createUploadSession(fileName: string, accessToken: string)
   }
 }
 
-// 上传文件块的函数
-export async function uploadChunk(uploadUrl: string, file: Blob, start: number, end: number) {
-  const chunk = file.slice(start, end);  // 获取文件块
-  const fileSize = file.size;
-
-  try {
-    const response = await fetch(uploadUrl, {
-      method: 'PUT',
-      headers: {
-        'Content-Range': `bytes ${start}-${end - 1}/${fileSize}`,
-        'Content-Length': `${end - start}`,
-      },
-      body: chunk,  // 上传的文件块
-    });
-
-    const data = await response.json();
-
-    return data;
-  } catch (error) {
-    throw new Error(`Error uploading chunk: ${error}`);
-  }
-}
-
 // 分块上传大文件的函数
-export async function uploadLargeFile(file: string) {
+async function uploadLargeFile(file: string) {
   try {
     const accessToken = await gettoken();  // 获取 OneDrive 的访问令牌
 
@@ -60,22 +37,7 @@ export async function uploadLargeFile(file: string) {
 
     return uploadUrl;
 
-    // const chunkSize = 5 * 1024 * 1024;  // 每个分块大小为 5MB
-    // let start = 0;
-    // let end = chunkSize;
-
-    // while (start < file.size) {
-    //   console.log(`Uploading chunk: ${start}-${end}`);
-      
-    //   // 分块上传文件
-    //   await uploadChunk(uploadUrl, file, start, Math.min(end, file.size));
-      
-    //   start = end;
-    //   end = Math.min(start + chunkSize, file.size);  // 计算下一个块的结束位置
-    // }
-
-    // console.log('File upload complete!');
-    // return { success: true, message: 'File uploaded successfully' };
+    
   } catch (error) {
     console.error('Error during upload:', error);
     return { success: false, message: error };
